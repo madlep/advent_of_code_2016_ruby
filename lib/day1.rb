@@ -1,4 +1,5 @@
 require "matrix"
+require "hamster"
 
 class Day1
 
@@ -32,6 +33,12 @@ class Day1
       Point.new(@location + (@heading * distance), @heading)
     end
 
+    def cover(distance)
+      (1..distance).map{|d|
+        Point.new(@location + (@heading * d), @heading)
+      }
+    end
+
     def block_distance
       @location[0,0].abs + @location[1,0].abs
     end
@@ -58,6 +65,25 @@ class Day1
           .move(direction.distance)
       }
       .block_distance
+  end
+
+  def run_part2(directions)
+    Parser.new(directions).inject({visited: Hamster::Set.new, current: Point.new}){|state, direction|
+      points = state[:current]
+        .send(direction.rotation)
+        .cover(direction.distance)
+
+      visited = points.inject(state[:visited]){|v, point|
+        if v.include?(point)
+          return point.block_distance
+        else
+          v.add(point)
+        end
+      }
+
+      {visited: visited, current: points.last}
+    }
+    raise "no point visited twice"
   end
 
   Direction = Struct.new(:rotation, :distance)
