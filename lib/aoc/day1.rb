@@ -1,7 +1,8 @@
 require "matrix"
 require "hamster"
+require "aoc/list"
 
-class Day1
+class AOC::Day1
 
   class Point
     RIGHT = Matrix[
@@ -90,6 +91,7 @@ class Day1
 
   class Parser
     include Enumerable
+    include AOC::List
 
     def initialize(directions)
       @directions = directions
@@ -152,12 +154,6 @@ class Day1
       when " " then new_directions
       else directions
       end
-    end
-
-    def ht(s)
-      h = s[0]
-      t = s[1..-1]
-      [h,t]
     end
   end
 

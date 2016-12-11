@@ -1,6 +1,6 @@
-require 'day1'
+require "aoc/day1"
 
-RSpec.describe Day1 do
+RSpec.describe AOC::Day1 do
   context "provided examples" do
     it "calculates correctly" do
       expect(subject.run("R2, L3")).to eq(5)
