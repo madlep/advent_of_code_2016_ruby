@@ -1,7 +1,13 @@
+GIT
+  remote: https://github.com/madlep/algebrick.git
+  revision: e0ae332d38e637f93d9c185a97aee73c4dcfe318
+  branch: implement_hash_and_eql
+  specs:
+    algebrick (0.7.3)
+
 GEM
   remote: https://rubygems.org/
   specs:
-    algebrick (0.7.3)
     concurrent-ruby (1.0.2)
     diff-lcs (1.2.5)
     hamster (3.0.0)
@@ -25,7 +31,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  algebrick (~> 0.7.3)
+  algebrick (~> 0.7.3)!
   hamster (~> 3.0.0)
   rake (~> 11.3)
   rspec (~> 3.5)
