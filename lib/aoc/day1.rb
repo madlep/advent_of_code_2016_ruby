@@ -70,15 +70,13 @@ class AOC::Day1
     def block_distance
       self[:location].block_distance
     end
-  end
 
-  # class Point
-  #   def cover(distance)
-  #     (1..distance).map{|d|
-  #       Point.new(@location + (@heading * d), @heading)
-  #     }
-  #   end
-  # end
+    def cover(distance)
+      (1..distance).map{|d|
+        self[:location] + (self[:heading] * d)
+      }
+    end
+  end
 
   def run(directions)
     Parser.new(directions)
@@ -91,21 +89,32 @@ class AOC::Day1
   end
 
   def run_part2(directions)
-    Parser.new(directions).inject({visited: Hamster::Set.new, current: Point.new}){|state, direction|
-      points = state[:current]
-        .send(direction.rotation)
-        .cover(direction.distance)
+    state = Algebrick.type { fields visited: Hamster::Set, walker: Walker }
 
-      visited = points.inject(state[:visited]){|v, point|
-        if v.include?(point)
-          return point.block_distance
-        else
-          v.add(point)
-        end
+    Parser
+      .new(directions)
+      .inject(state[visited: Hamster::Set.new, walker: Walker.default]){|current, direction|
+
+        locations = current[:walker]
+          .send(direction.rotation)
+          .cover(direction.distance)
+
+        visited = locations.inject(current[:visited]){|v, location|
+          puts location.inspect
+          if v.include?(location)
+            return location.block_distance
+          else
+            v.add(location)
+          end
+        }
+
+        walker = current[:walker]
+          .send(direction.rotation)
+          .move(direction.distance)
+
+        puts visited.inspect
+        state[visited: visited, walker: walker]
       }
-
-      {visited: visited, current: points.last}
-    }
     raise "no point visited twice"
   end
 
