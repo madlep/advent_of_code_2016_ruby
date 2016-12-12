@@ -1,10 +1,13 @@
 require "matrix"
 require "hamster"
 require "aoc/list"
+require "algebrick"
 
 class AOC::Day1
 
-  class Point
+
+  Vector = Algebrick.type { fields x: Integer, y: Integer }
+  module Vector
     RIGHT = Matrix[
       [0, 1],
       [-1, 0]
@@ -15,53 +18,72 @@ class AOC::Day1
       [1, 0]
     ]
 
-    attr_reader :location
+    module_function def zero
+      Vector[0,0]
+    end
 
-    def initialize(location=Matrix[[0],[0]], heading=Matrix[[0],[1]])
-      @location = location
-      @heading = heading
+    module_function def north
+      Vector[0,1]
     end
 
     def right
-      Point.new(@location, RIGHT * @heading)
+      new_heading = RIGHT * Matrix[[self[:x]], [self[:y]]]
+      Vector[x: new_heading[0,0], y: new_heading[1,0]]
     end
 
     def left
-      Point.new(@location, LEFT * @heading)
+      new_heading = LEFT * Matrix[[self[:x]], [self[:y]]]
+      Vector[x: new_heading[0,0], y: new_heading[1,0]]
     end
 
-    def move(distance)
-      Point.new(@location + (@heading * distance), @heading)
+    def *(scalar_distance)
+      Vector[x: self[:x] * scalar_distance, y: self[:y] * scalar_distance]
     end
 
-    def cover(distance)
-      (1..distance).map{|d|
-        Point.new(@location + (@heading * d), @heading)
-      }
+    def +(other_point)
+      Vector[x: self[:x] + other_point[:x], y: self[:y] + other_point[:y]]
     end
 
     def block_distance
-      @location[0,0].abs + @location[1,0].abs
-    end
-
-    def hash
-      @location.hash
-    end
-
-    def ==(other)
-      @location == other.location
-    end
-    alias :eql? :==
-
-    def to_s
-      "@location=#{@location} @heading=#{@heading}"
+      self[:x].abs + self[:y].abs
     end
   end
 
+  Walker = Algebrick.type { fields location: Vector, heading: Vector }
+  module Walker
+    module_function def default
+      Walker[location: Vector.zero, heading: Vector.north]
+    end
+
+    def move(distance)
+      self.update(location: self[:location] + (self[:heading] * distance))
+    end
+
+    def right
+      self.update(heading: self[:heading].right)
+    end
+
+    def left
+      self.update(heading: self[:heading].left)
+    end
+
+    def block_distance
+      self[:location].block_distance
+    end
+  end
+
+  # class Point
+  #   def cover(distance)
+  #     (1..distance).map{|d|
+  #       Point.new(@location + (@heading * d), @heading)
+  #     }
+  #   end
+  # end
+
   def run(directions)
     Parser.new(directions)
-      .inject(Point.new){|point, direction|
-        point
+      .inject(Walker.default){|walker, direction|
+        walker
           .send(direction.rotation)
           .move(direction.distance)
       }
