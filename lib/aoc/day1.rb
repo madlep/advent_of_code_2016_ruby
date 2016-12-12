@@ -99,7 +99,6 @@ class AOC::Day1
           .cover(direction.distance)
 
         visited = locations.inject(current[:visited]){|v, location|
-          puts location.inspect
           if v.include?(location)
             return location.block_distance
           else
@@ -111,7 +110,6 @@ class AOC::Day1
           .send(direction.rotation)
           .move(direction.distance)
 
-        puts visited.inspect
         state[visited: visited, walker: walker]
       }
     raise "no point visited twice"
