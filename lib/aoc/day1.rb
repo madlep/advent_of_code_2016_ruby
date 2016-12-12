@@ -5,7 +5,6 @@ require "algebrick"
 
 class AOC::Day1
 
-
   Vector = Algebrick.type { fields x: Integer, y: Integer }
   module Vector
     RIGHT = Matrix[
