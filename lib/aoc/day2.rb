@@ -14,16 +14,20 @@ class AOC::Day2
               Right = atom
   }
 
-  def run(instructions)
+  def run_part1(instructions)
     current_button = Button[5]
     Parser
       .new(instructions)
-      .map{|line| line.inject(current_button){|button, movement| current_button = next_button(button, movement)} }
+      .map{|line|
+        line.inject(current_button){|button, movement|
+          current_button = next_button_part1(button, movement)
+        }
+      }
       .map(&:value)
       .join
   end
 
-  def next_button(button, movement)
+  def next_button_part1(button, movement)
     match [button, movement],
       on([Button[1], Up],     button),
       on([Button[1], Down],   Button[4]),
