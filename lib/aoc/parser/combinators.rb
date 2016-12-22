@@ -72,6 +72,13 @@ module AOC::Parser::Combinators
     }
   end
 
+  def symbol(symbol)
+    term_parser = term(symbol.to_s)
+    ->(str) {
+      term_parser.(str).fmap{|v| v.to_sym }
+    }
+  end
+
   def int()
     matcher = match(/[0-9]+/)
     -> (str) {

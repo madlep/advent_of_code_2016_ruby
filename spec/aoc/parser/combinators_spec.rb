@@ -48,6 +48,20 @@ RSpec.describe AOC::Parser::Combinators do
     end
   end
 
+  describe "symbol generated parser" do
+    it "parses terms and converts to symbols" do
+      parser = symbol(:foobar)
+      expect(parser.call("foobar is baz")).to eq(
+        Result[value: :foobar, remaining: " is baz"]
+      )
+    end
+
+    it "complains when symbol can't be parsed" do
+      parser = symbol(:foobar)
+      expect{parser.call("fuzbar is baz")}.to raise_error(ParseError)
+    end
+  end
+
   describe "#int generated parser" do
     it "parses integers from string" do
       parser = int()
