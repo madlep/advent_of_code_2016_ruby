@@ -8,7 +8,7 @@ class AOC::Parser
   end
 
   def parse(str)
-    @parser.call(str).captures
+    @parser.(str).captures
   end
 end
 

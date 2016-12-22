@@ -11,68 +11,68 @@ RSpec.describe AOC::Parser::Combinators do
   describe "#term generated parser" do
     it "parses a term from string" do
       parser = term("foo")
-      expect(parser.call("foobar")).to eq(
+      expect(parser.("foobar")).to eq(
         Result[value: "foo", remaining: "bar"]
       )
     end
 
     it "raises a parse error when term is not at start of string" do
       parser = term("foo")
-      expect{parser.call("fuzboz")}.to raise_error(ParseError)
+      expect{parser.("fuzboz")}.to raise_error(ParseError)
     end
   end
 
   describe "#capture generated parser" do
     it "converts Result into a CaptureResult" do
       parser = capture(term("cheese"))
-      expect(parser.call("cheese is fun")).to eq(CaptureResult[value: "cheese", remaining: " is fun"])
+      expect(parser.("cheese is fun")).to eq(CaptureResult[value: "cheese", remaining: " is fun"])
     end
 
     it "keeps NoResult as NoResult" do
       parser = capture(maybe(term("fuz")))
-      expect(parser.call("foobar")).to eq(NoResult[remaining: "foobar"])
+      expect(parser.("foobar")).to eq(NoResult[remaining: "foobar"])
     end
   end
 
   describe "#match generated parser" do
     it "parses regex from string" do
       parser = match(/[0-9]+/)
-      expect(parser.call("1234 I like cheese")).to eq(
+      expect(parser.("1234 I like cheese")).to eq(
         Result[value: "1234", remaining: " I like cheese"]
       )
     end
 
     it "matches at start of string only" do
       parser = parser = match(/[0-9]+/)
-      expect{parser.call("foo bar 123 baz")}.to raise_error(ParseError)
+      expect{parser.("foo bar 123 baz")}.to raise_error(ParseError)
     end
   end
 
   describe "symbol generated parser" do
     it "parses terms and converts to symbols" do
       parser = symbol(:foobar)
-      expect(parser.call("foobar is baz")).to eq(
+      expect(parser.("foobar is baz")).to eq(
         Result[value: :foobar, remaining: " is baz"]
       )
     end
 
     it "complains when symbol can't be parsed" do
       parser = symbol(:foobar)
-      expect{parser.call("fuzbar is baz")}.to raise_error(ParseError)
+      expect{parser.("fuzbar is baz")}.to raise_error(ParseError)
     end
   end
 
   describe "#int generated parser" do
     it "parses integers from string" do
       parser = int()
-      expect(parser.call("1234 I like cheese")).to eq(
+      expect(parser.("1234 I like cheese")).to eq(
         Result[value: 1234, remaining: " I like cheese"]
       )
     end
 
     it "complains when an integer can't be parsed" do
       parser = int()
-      expect{parser.call("zzzz1234 I like cheese")}.to raise_error(ParseError)
+      expect{parser.("zzzz1234 I like cheese")}.to raise_error(ParseError)
     end
   end
 
@@ -80,7 +80,7 @@ RSpec.describe AOC::Parser::Combinators do
     it "returns included parser result if it parses" do
       child_parser = term("cheese")
       parser = maybe(child_parser)
-      expect(parser.call("cheese is nice")).to eq(
+      expect(parser.("cheese is nice")).to eq(
         Result[value: "cheese", remaining: " is nice"]
       )
     end
@@ -88,7 +88,7 @@ RSpec.describe AOC::Parser::Combinators do
     it "doesn't complain if child doesn't parse" do
       child_parser = term("cheese")
       parser = maybe(child_parser)
-      expect(parser.call("tube cheese is not nice")).to eq(
+      expect(parser.("tube cheese is not nice")).to eq(
         NoResult[remaining: "tube cheese is not nice"]
       )
     end
@@ -98,25 +98,25 @@ RSpec.describe AOC::Parser::Combinators do
     it "returns first parser that parses" do
       parser = one_of(term("foo"), term("bar"))
 
-      expect(parser.call("foobroz")).to eq(
+      expect(parser.("foobroz")).to eq(
         Result[value: "foo", remaining: "broz"]
       )
 
-      expect(parser.call("barfuz")).to eq(
+      expect(parser.("barfuz")).to eq(
         Result[value: "bar", remaining: "fuz"]
       )
     end
 
     it "complains if no parsers parse" do
       parser = one_of(term("foo"), term("bar"))
-      expect{parser.call("cheese")}.to raise_error(ParseError)
+      expect{parser.("cheese")}.to raise_error(ParseError)
     end
   end
 
   describe "#many generated parser" do
     it "parses multiple repeats of a parser" do
       parser = many(term('foo'))
-      expect(parser.call('foofoofoobarbar')).to eq(
+      expect(parser.('foofoofoobarbar')).to eq(
         Result[
           value: [
             Result[value: "foo", remaining: "foofoobarbar"],
@@ -130,7 +130,7 @@ RSpec.describe AOC::Parser::Combinators do
 
     it "complains if at least one instance of parser can't parse the string" do
       parser = many(term("foo"))
-      expect{parser.call("cheese")}.to raise_error(ParseError)
+      expect{parser.("cheese")}.to raise_error(ParseError)
     end
   end
 
@@ -143,7 +143,7 @@ RSpec.describe AOC::Parser::Combinators do
         space(),
         match(/\w+/)
       )
-      expect(parser.call("I like cheese")).to eq(
+      expect(parser.("I like cheese")).to eq(
         Result[
           value: [
             Result[value: "I", remaining: " like cheese"],
@@ -165,14 +165,14 @@ RSpec.describe AOC::Parser::Combinators do
         space(),
         match(/\w+/)
       )
-      expect{parser.call("I don't like cheese")}.to raise_error(ParseError)
+      expect{parser.("I don't like cheese")}.to raise_error(ParseError)
     end
   end
 
   describe "#space generated parser" do
     it "parses whitespace" do
       parser = space()
-      expect(parser.call("  foobar")).to eq(
+      expect(parser.("  foobar")).to eq(
         Result[value: "  ", remaining: "foobar"]
       )
     end

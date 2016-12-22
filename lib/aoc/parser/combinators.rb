@@ -82,7 +82,7 @@ module AOC::Parser::Combinators
   def int()
     matcher = match(/[0-9]+/)
     -> (str) {
-      matcher.call(str).fmap{|v| Integer(v) }
+      matcher.(str).fmap{|v| Integer(v) }
     }
   end
 
