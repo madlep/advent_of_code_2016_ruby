@@ -145,4 +145,12 @@ module AOC::Parser::Combinators
   def space()
     match(/\s+/)
   end
+
+  def eol()
+    match(/\n/)
+  end
+
+  def eof()
+    match(/\z/)
+  end
 end

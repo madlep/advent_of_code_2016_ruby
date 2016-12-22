@@ -177,4 +177,32 @@ RSpec.describe AOC::Parser::Combinators do
       )
     end
   end
+
+  describe "#eol generated parser" do
+    it "parses end of line character" do
+      parser = eol()
+      expect(parser.("\nfoobar")).to eq(
+        Result[value: "\n", remaining: "foobar"]
+      )
+    end
+
+    it "complains if end of line can't be parsed" do
+      parser = eol()
+      expect{parser.("not\nfoobar")}.to raise_error(ParseError)
+    end
+  end
+
+  describe "#eof generated parser" do
+    it "parses end of file character" do
+      parser = eof()
+      expect(parser.("")).to eq(
+        Result[value: "", remaining: ""]
+      )
+    end
+
+    it "complains if end of line can't be parsed" do
+      parser = eof()
+      expect{parser.("not\nfoobar")}.to raise_error(ParseError)
+    end
+  end
 end
