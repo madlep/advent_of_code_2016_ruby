@@ -2,14 +2,40 @@ require "aoc"
 require "aoc/parser"
 
 module AOC::Parser::Combinators
+  include Algebrick::Matching
 
   ParseResult = Algebrick.type {
     variants  NoResult = type { fields! remaining: String}
               Result = type { fields! value: Object, remaining: String}
+              CaptureResult = type { fields! value: Object, remaining: String}
   }
   module Result
     def fmap(&f)
       self.update(value: f.(self.value))
+    end
+
+    def capture()
+      CaptureResult[value: self.value, remaining: self.remaining]
+    end
+  end
+
+  module NoResult
+    def capture()
+      self
+    end
+  end
+
+  module CaptureResult
+    def captures
+      match self.value,
+        on(Enumerable){
+          self.value.inject(Hamster::Vector[]){|caps, v|
+            match v,
+              on(CaptureResult){ caps.add(v.captures) },
+              on(any, caps)
+          }
+        },
+        on(any, self.value)
     end
   end
 
@@ -23,6 +49,12 @@ module AOC::Parser::Combinators
       else
         raise ParseError, "expecting #{t} at #{str}"
       end
+    }
+  end
+
+  def capture(parser)
+    ->(str) {
+      parser.(str).capture
     }
   end
 

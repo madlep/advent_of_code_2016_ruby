@@ -7,17 +7,17 @@ RSpec.describe AOC::Parser do
 
     it "parses" do
       parser = described_class.new(
-        seq(
-          int(label: :operand1),
+        capture(seq(
+          capture(int()),
           maybe(space),
-          one_of(term("+"), term("-"), term("*"), term("/"), label: :operator),
+          capture(one_of(symbol(:+), symbol(:-), symbol(:*), symbol(:/))),
           maybe(space),
-          int(label: :operand2)
+          capture(int())
         )
-      )
+      ))
 
       str = "12 + 23"
-      expect(parser.parse(str)).to eq("foobar")
+      expect(parser.parse(str)).to eq([12, :+, 23])
     end
   end
 end

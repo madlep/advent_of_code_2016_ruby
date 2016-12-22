@@ -5,6 +5,7 @@ RSpec.describe AOC::Parser::Combinators do
 
   Result = AOC::Parser::Combinators::Result
   NoResult = AOC::Parser::Combinators::NoResult
+  CaptureResult = AOC::Parser::Combinators::CaptureResult
   ParseError = AOC::Parser::Combinators::ParseError
 
   describe "#term generated parser" do
@@ -18,6 +19,18 @@ RSpec.describe AOC::Parser::Combinators do
     it "raises a parse error when term is not at start of string" do
       parser = term("foo")
       expect{parser.call("fuzboz")}.to raise_error(ParseError)
+    end
+  end
+
+  describe "#capture generated parser" do
+    it "converts Result into a CaptureResult" do
+      parser = capture(term("cheese"))
+      expect(parser.call("cheese is fun")).to eq(CaptureResult[value: "cheese", remaining: " is fun"])
+    end
+
+    it "keeps NoResult as NoResult" do
+      parser = capture(maybe(term("fuz")))
+      expect(parser.call("foobar")).to eq(NoResult[remaining: "foobar"])
     end
   end
 
