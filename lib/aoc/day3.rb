@@ -1,5 +1,4 @@
 require "algebrick"
-require "aoc/list"
 require "aoc/parser/combinators"
 
 class AOC::Day3
