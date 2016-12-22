@@ -1,5 +1,6 @@
 require "hamster/vector"
 require "algebrick"
+require "aoc"
 
 class AOC::Parser
   def initialize(parser)
