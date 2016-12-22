@@ -161,7 +161,6 @@ class AOC::Day2
     include Enumerable
     include AOC::List
     include Algebrick::Matching
-    include Algebrick::Types
 
     ParseResult = Algebrick.type(:a) {
       variants  Result = type(:a) { fields :a, String },
