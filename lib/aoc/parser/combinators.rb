@@ -41,6 +41,12 @@ module AOC::Parser::Combinators
 
   class ParseError < StandardError; end
 
+  def capture(parser)
+    ->(str) {
+      parser.(str).capture
+    }
+  end
+
   def term(t)
     ->(str) {
       if str.start_with?(t)
@@ -51,12 +57,7 @@ module AOC::Parser::Combinators
       end
     }
   end
-
-  def capture(parser)
-    ->(str) {
-      parser.(str).capture
-    }
-  end
+  def term!(t); capture(term(t)); end
 
   def match(regex)
     ->(str) {
@@ -71,6 +72,7 @@ module AOC::Parser::Combinators
       end
     }
   end
+  def match!(regex); capture(match(regex)); end
 
   def symbol(symbol)
     term_parser = term(symbol.to_s)
@@ -78,6 +80,7 @@ module AOC::Parser::Combinators
       term_parser.(str).fmap{|v| v.to_sym }
     }
   end
+  def symbol!(symbol); capture(symbol(symbol)); end
 
   def int()
     matcher = match(/[0-9]+/)
@@ -85,6 +88,7 @@ module AOC::Parser::Combinators
       matcher.(str).fmap{|v| Integer(v) }
     }
   end
+  def int!(); capture(int()); end
 
   def maybe(parser)
     ->(str) {
@@ -95,7 +99,7 @@ module AOC::Parser::Combinators
       end
     }
   end
-
+  def maybe!(parser); capture(maybe(parser)); end
 
   def one_of(*parsers)
     ->(str) {
@@ -109,6 +113,7 @@ module AOC::Parser::Combinators
       raise ParseError, "could not parse one_of in #{str}"
     }
   end
+  def one_of!(*parsers); capture(one_of(parsers)); end
 
   def many(parser)
     ->(str) {
@@ -129,6 +134,7 @@ module AOC::Parser::Combinators
       end
     }
   end
+  def many!(parser); capture(many(parser)); end
 
   def seq(*parsers)
     ->(str) {
@@ -141,16 +147,20 @@ module AOC::Parser::Combinators
       Result[value: result_value, remaining: remaining_str]
     }
   end
+  def seq!(*parsers); capture(seq(*parsers)); end
 
   def space()
     match(/\s+/)
   end
+  def space!(); capture(space());end
 
   def eol()
     match(/\n/)
   end
+  def eol!(); capture(eol()); end
 
   def eof()
     match(/\z/)
   end
+  def eof!(); capture(eof()); end
 end
