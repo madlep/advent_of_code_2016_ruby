@@ -5,14 +5,13 @@ RSpec.describe AOC::Parser::Combinators do
 
   Result = AOC::Parser::Combinators::Result
   NoResult = AOC::Parser::Combinators::NoResult
-  Discard = AOC::Parser::Combinators::Discard
   ParseError = AOC::Parser::Combinators::ParseError
 
   describe "#term generated parser" do
     it "parses a term from string" do
       parser = term("foo")
       expect(parser.call("foobar")).to eq(
-        Result[value: "foo", remaining: "bar", label: Discard]
+        Result[value: "foo", remaining: "bar"]
       )
     end
 
@@ -20,20 +19,13 @@ RSpec.describe AOC::Parser::Combinators do
       parser = term("foo")
       expect{parser.call("fuzboz")}.to raise_error(ParseError)
     end
-
-    it "can have a label" do
-      parser = term("foo", label: :my_label)
-      expect(parser.call("foobar")).to eq(
-        Result[value: "foo", remaining: "bar", label: :my_label]
-      )
-    end
   end
 
   describe "#match generated parser" do
     it "parses regex from string" do
       parser = match(/[0-9]+/)
       expect(parser.call("1234 I like cheese")).to eq(
-        Result[value: "1234", remaining: " I like cheese", label: Discard]
+        Result[value: "1234", remaining: " I like cheese"]
       )
     end
 
@@ -41,27 +33,13 @@ RSpec.describe AOC::Parser::Combinators do
       parser = parser = match(/[0-9]+/)
       expect{parser.call("foo bar 123 baz")}.to raise_error(ParseError)
     end
-
-    it "can have a label" do
-      parser = parser = match(/[0-9]+/, label: :my_label)
-      expect(parser.call("1234 I like cheese")).to eq(
-        Result[value: "1234", remaining: " I like cheese", label: :my_label]
-      )
-    end
   end
 
   describe "#int generated parser" do
     it "parses integers from string" do
       parser = int()
       expect(parser.call("1234 I like cheese")).to eq(
-        Result[value: 1234, remaining: " I like cheese", label: Discard]
-      )
-    end
-
-    it "can have a label" do
-      parser = int(label: :my_label)
-      expect(parser.call("1234 I like cheese")).to eq(
-        Result[value: 1234, remaining: " I like cheese", label: :my_label]
+        Result[value: 1234, remaining: " I like cheese"]
       )
     end
 
@@ -77,9 +55,8 @@ RSpec.describe AOC::Parser::Combinators do
       parser = maybe(child_parser)
       expect(parser.call("cheese is nice")).to eq(
         Result[
-          value: Result[value: "cheese", remaining: " is nice", label: Discard],
-          remaining: " is nice",
-          label: Discard
+          value: Result[value: "cheese", remaining: " is nice"],
+          remaining: " is nice"
         ]
       )
     end
@@ -88,7 +65,7 @@ RSpec.describe AOC::Parser::Combinators do
       child_parser = term("cheese")
       parser = maybe(child_parser)
       expect(parser.call("tube cheese is not nice")).to eq(
-        NoResult[remaining: "tube cheese is not nice", label: Discard]
+        NoResult[remaining: "tube cheese is not nice"]
       )
     end
   end
@@ -99,17 +76,15 @@ RSpec.describe AOC::Parser::Combinators do
 
       expect(parser.call("foobroz")).to eq(
         Result[
-          value: Result[value: "foo", remaining: "broz", label: Discard],
-          remaining: "broz",
-          label: Discard
+          value: Result[value: "foo", remaining: "broz"],
+          remaining: "broz"
         ]
       )
 
       expect(parser.call("barfuz")).to eq(
         Result[
-          value: Result[value: "bar", remaining: "fuz", label: Discard],
-          remaining: "fuz",
-          label: Discard
+          value: Result[value: "bar", remaining: "fuz"],
+          remaining: "fuz"
         ]
       )
     end
@@ -126,12 +101,11 @@ RSpec.describe AOC::Parser::Combinators do
       expect(parser.call('foofoofoobarbar')).to eq(
         Result[
           value: [
-            Result[value: "foo", remaining: "foofoobarbar", label: Discard],
-            Result[value: "foo", remaining: "foobarbar", label: Discard],
-            Result[value: "foo", remaining: "barbar", label: Discard]
+            Result[value: "foo", remaining: "foofoobarbar"],
+            Result[value: "foo", remaining: "foobarbar"],
+            Result[value: "foo", remaining: "barbar"]
           ],
-          remaining: "barbar",
-          label: Discard
+          remaining: "barbar"
         ]
       )
     end
@@ -154,14 +128,13 @@ RSpec.describe AOC::Parser::Combinators do
       expect(parser.call("I like cheese")).to eq(
         Result[
           value: [
-            Result[value: "I", remaining: " like cheese", label: Discard],
-            Result[value: " ", remaining: "like cheese", label: Discard],
-            Result[value: "like", remaining: " cheese", label: Discard],
-            Result[value: " ", remaining: "cheese", label: Discard],
-            Result[value: "cheese", remaining: "", label: Discard]
+            Result[value: "I", remaining: " like cheese"],
+            Result[value: " ", remaining: "like cheese"],
+            Result[value: "like", remaining: " cheese"],
+            Result[value: " ", remaining: "cheese"],
+            Result[value: "cheese", remaining: ""]
           ],
-          remaining: "",
-          label: Discard
+          remaining: ""
         ]
       )
     end
@@ -182,7 +155,7 @@ RSpec.describe AOC::Parser::Combinators do
     it "parses whitespace" do
       parser = space()
       expect(parser.call("  foobar")).to eq(
-        Result[value: "  ", remaining: "foobar", label: Discard]
+        Result[value: "  ", remaining: "foobar"]
       )
     end
   end
