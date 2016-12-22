@@ -54,10 +54,7 @@ RSpec.describe AOC::Parser::Combinators do
       child_parser = term("cheese")
       parser = maybe(child_parser)
       expect(parser.call("cheese is nice")).to eq(
-        Result[
-          value: Result[value: "cheese", remaining: " is nice"],
-          remaining: " is nice"
-        ]
+        Result[value: "cheese", remaining: " is nice"]
       )
     end
 
@@ -75,17 +72,11 @@ RSpec.describe AOC::Parser::Combinators do
       parser = one_of(term("foo"), term("bar"))
 
       expect(parser.call("foobroz")).to eq(
-        Result[
-          value: Result[value: "foo", remaining: "broz"],
-          remaining: "broz"
-        ]
+        Result[value: "foo", remaining: "broz"]
       )
 
       expect(parser.call("barfuz")).to eq(
-        Result[
-          value: Result[value: "bar", remaining: "fuz"],
-          remaining: "fuz"
-        ]
+        Result[value: "bar", remaining: "fuz"]
       )
     end
 

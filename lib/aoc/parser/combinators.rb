@@ -50,8 +50,7 @@ module AOC::Parser::Combinators
   def maybe(parser)
     ->(str) {
       begin
-        parser_result = parser.(str)
-        Result[value: parser_result, remaining: parser_result.remaining]
+        parser.(str)
       rescue ParseError
         NoResult[remaining: str]
       end
@@ -63,10 +62,9 @@ module AOC::Parser::Combinators
     ->(str) {
       parsers.each do |parser|
         begin
-          parser_result = parser.(str)
-          return Result[value: parser_result, remaining: parser_result.remaining]
+          return parser.(str)
         rescue ParseError
-          false
+          next
         end
       end
       raise ParseError, "could not parse one_of in #{str}"
