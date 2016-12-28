@@ -10,4 +10,11 @@ totally-real-room-200[decoy]"
       expect(subject.run_part1(instructions)).to eq(1514)
     end
   end
+
+  context "part 2" do
+    it "decrypts room names" do
+      instructions = "qzmt-zixmtkozy-ivhz-343[abcde]"
+      expect(subject.run_part2(instructions)).to eq([AOC::Day4::DecryptedRoom["very encrypted name", 343]])
+    end
+  end
 end
