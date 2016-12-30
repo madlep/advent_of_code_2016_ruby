@@ -2,16 +2,23 @@ require 'algebrick'
 require 'aoc'
 
 class AOC::Day5
-  State = Algebrick.type { fields! current_index: Integer, code: String }
   def run_part1(instructions)
-    8.times.inject(State[0, ""]){|state, _n|
-      index = state.current_index
-      while true do
-        hash = Digest::MD5.digest("#{instructions}#{index}").bytes
-        index += 1
-        break if hash[0] == 0 && hash[1] == 0 && hash[2] < 0x10
+    gen = md5_generator(instructions)
+
+    8.times.inject(""){|code|
+      code + gen.next[2].to_s(16)[0]
+    }
+  end
+
+  private
+  def md5_generator(instructions)
+    Enumerator.new do |y|
+      i = 0
+      loop do
+        hash = Digest::MD5.digest("#{instructions}#{i}").bytes
+        y << hash if hash[0] == 0 && hash[1] == 0 && hash[2] < 0x10
+        i = i.next
       end
-      State[current_index: index, code: state.code + hash[2].to_s(16)[0]]
-    }.code
+    end
   end
 end
