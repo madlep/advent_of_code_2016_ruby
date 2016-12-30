@@ -1,5 +1,5 @@
-require 'algebrick'
-require 'aoc'
+require "algebrick"
+require "aoc"
 
 class AOC::Day5
   def run_part1(instructions)
