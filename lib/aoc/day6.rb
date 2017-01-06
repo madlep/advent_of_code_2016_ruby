@@ -14,8 +14,12 @@ class AOC::Day6
       ]
     end
 
-    def decode
-      positions.map(&:character).join
+    def decode_most_likely
+      positions.map(&:most_likely_character).join
+    end
+
+    def decode_least_likely
+      positions.map(&:least_likely_character).join
     end
   end
 
@@ -28,12 +32,25 @@ class AOC::Day6
       PossibleCharacter[char_counts.merge(other.char_counts){|k,v1, v2| v1 + v2 }]
     end
 
-    def character
+    def most_likely_character
       char_counts.max_by{|kv| kv[1]}[0]
+    end
+
+    def least_likely_character
+      char_counts.min_by{|kv| kv[1]}[0]
     end
   end
 
   def run_part1(instructions)
+    run(instructions).decode_most_likely
+  end
+
+  def run_part2(instructions)
+    run(instructions).decode_least_likely
+  end
+
+  private
+  def run(instructions)
     parser = many!(
       seq!(
         maybe(space()),
@@ -44,12 +61,11 @@ class AOC::Day6
 
     partial_messages = parser.(instructions).captures.flatten
 
-    decoded_message = partial_messages.inject(PossibleMessage[Hamster::Vector[]]){|possible_message, partial_message|
+    partial_messages.inject(PossibleMessage[Hamster::Vector[]]){|possible_message, partial_message|
       partial_message.chars.each_with_index.inject(possible_message){|current_possible_message, char_index|
         char, index = char_index
         current_possible_message.mappend_possible_character(index, PossibleCharacter[Hamster::Hash[char => 1]])
       }
     }
-    decoded_message.decode
   end
 end
